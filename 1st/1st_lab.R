@@ -1,3 +1,5 @@
+library(readxl)
+
 num <- seq(1, 37)
 a <- c(0.46, 0.52, 0.86, 0.91, 0.54, 
        0.64, 0.67, 0.74, 0.69, 0.61, 
@@ -48,5 +50,20 @@ write.table(data.frame(mean = mean_val, sd = sd_val), "mean_sd.txt", row.names =
 
 my_frame$New <- rnorm(n = nrow(my_frame), mean = mean_val, sd = sd_val)
 print(my_frame)
+
+flat <- read_excel("Flat98.xlsx")
+
+write.table(head(flat, 5), "flat_head.txt", row.names = FALSE)
+
+f <- function(vec) {
+  return(sort(vec, decreasing = TRUE)[1:5])
+}
+
+most_expensive <- flat[order(flat$price, decreasing = TRUE)[1:5], ]
+write.table(most_expensive, "most_expensive.txt", row.names = FALSE)
+
+two_room_flats <- flat[flat$rooms == 2, ]
+largest_livsp <- two_room_flats[order(two_room_flats$livsp, decreasing = TRUE)[1:5], ]
+write.table(largest_livsp, "largest_livsp_2rooms.txt", row.names = FALSE)
 
 
