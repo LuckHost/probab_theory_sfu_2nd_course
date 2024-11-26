@@ -34,12 +34,12 @@ analyze_sample <- function(sample, name) {
   # Построение гистограммы и плотности
   plot <- ggplot(data.frame(sample), aes(x = sample)) +
     geom_histogram(aes(y = ..density..), bins = 10, fill = "lightblue", alpha = 0.7, color = "black") +
-    stat_function(fun = dnorm, args = list(mean = a_hat, sd = sigma_hat), color = "red", size = 1) +
+    stat_function(fun = dnorm, args = list(mean = a_hat, sd = sigma_hat), color = "red", linewidth = 1) +
     ggtitle(paste("Гистограмма и плотность для", name)) +
     xlab("Значения") +
     ylab("Относительная частота") +
     theme_minimal()
-  
+
   # Сохранение графика
   ggsave(paste0("hist_density_", name, ".png"), plot = plot, width = 7, height = 7)
   
@@ -49,7 +49,7 @@ analyze_sample <- function(sample, name) {
   x_vals <- seq(min(sample), max(sample), length.out = 100)
   theoretical_cdf <- pnorm(x_vals, mean = a_hat, sd = sigma_hat)
   
-  plot(ecdf_sample, main = paste("Эмпирическая и теоретическая функции распределения для", name),
+  plot(ecdf_sample, main = paste("Эмпирическая и теоретическая\nфункции распределения.", name),
        xlab = "Значения", ylab = "F(x)", col = "blue", lwd = 2)
   lines(x_vals, theoretical_cdf, col = "red", lwd = 2)
   legend("bottomright", legend = c("Эмпирическая", "Теоретическая"), col = c("blue", "red"), lwd = 2)
@@ -103,7 +103,7 @@ plot_confidence_intervals <- function(sample, param = "mean", name) {
   }
   
   plot(q_vals, interval_lengths, type = "l", col = "blue", lwd = 2,
-       main = paste("Длина доверительного интервала для", param, "(", name, ")"),
+       main = paste("Длина доверительного интервала\n", param, name),
        xlab = "Уровень доверия q", ylab = "Длина интервала")
 }
 
