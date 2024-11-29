@@ -1,5 +1,5 @@
 # 1. Чтение данных
-data_sample <- read.csv("/home/luckhost/programming/probab_theory_sfu_2nd_course/2nd/var1.csv", header = TRUE)$x # Предполагается, что данные в первом столбце
+data_sample <- as.numeric(read.csv("/home/luckhost/programming/probab_theory_sfu_2nd_course/2nd/var1.csv", header = TRUE)$x)
 sample1 <- data_sample[1:10]
 sample2 <- data_sample[1:50]
 sample3 <- data_sample
@@ -9,54 +9,43 @@ print(head(sample1))
 print(head(sample2))
 print(head(sample3))
 
-# Функция для расчетов и построения графиков
+# Функция для анализа выборки
 analyze_sample <- function(sample, name) {
-  library(ggplot2)
+  cat("\nАнализ выборки:", name, "\n")
   
-  # Основные числовые характеристики
+  # Основные численные характеристики
   sample_mean <- mean(sample)
-  sample_var <- var(sample)
-  sample_unbiased_var <- sample_var * (length(sample) / (length(sample) - 1))
-  sample_quantiles <- quantile(sample)
+  sample_unbaised_var <- var(sample)
+  sample_var <- sample_unbiased_var * (length(sample) - 1) / length(sample)
+  sample_sd <- sd(sample)
+  sample_quantiles <- quantile(sample, probs = c(0.25, 0.5, 0.75))
   
-  cat(paste0("\n", name, ": \n"))
-  cat("Среднее выборочное: ", sample_mean, "\n")
-  cat("Выборочная дисперсия: ", sample_var, "\n")
-  cat("Несмещенная выборочная дисперсия: ", sample_unbiased_var, "\n")
-  cat("Квантили: \n")
-  print(sample_quantiles)
+  cat("Среднее выборочное:", sample_mean, "\n")
+  cat("Смещённая выборочная дисперсия:", sample_var, "\n")
+  cat("Несмещённая выборочная дисперсия:", sample_unbiased_var, "\n")
+  cat("Выборочные квантили:", sample_quantiles, "\n")
   
   # Точечные оценки параметров нормального распределения
   a_hat <- sample_mean
-  sigma2_hat <- sample_unbiased_var
-  sigma_hat <- sqrt(sigma2_hat)
+  sigma_hat <- sample_sd
   
   # Построение гистограммы и плотности
-  plot <- ggplot(data.frame(sample), aes(x = sample)) +
-    geom_histogram(aes(y = ..density..), bins = 10, fill = "lightblue", alpha = 0.7, color = "black") +
-    stat_function(fun = dnorm, args = list(mean = a_hat, sd = sigma_hat), color = "red", linewidth = 1) +
-    ggtitle(paste("Гистограмма и плотность для", name)) +
-    xlab("Значения") +
-    ylab("Относительная частота") +
-    theme_minimal()
-
-  # Сохранение графика
-  ggsave(paste0("hist_density_", name, ".png"), plot = plot, width = 7, height = 7)
+  hist(sample, probability = TRUE, breaks = 10, 
+       main = paste("Гистограмма и плотность\n", name),
+       xlab = "Значения", ylab = "Относительная частота", col = "lightblue", border = "black")
+  curve(dnorm(x, mean = a_hat, sd = sigma_hat), 
+        col = "red", lwd = 2, add = TRUE)
+  legend("topright", legend = c("Гистограмма", "Теоретическая\nплотность"), 
+         fill = c("lightblue", NA), border = c("black", NA), lty = c(NA, 1), col = c("black", "red"))
   
-  
-  # Построение эмпирической и теоретической функции распределения
-  ecdf_sample <- ecdf(sample)
-  x_vals <- seq(min(sample), max(sample), length.out = 100)
-  theoretical_cdf <- pnorm(x_vals, mean = a_hat, sd = sigma_hat)
-  
-  plot(ecdf_sample, main = paste("Эмпирическая и теоретическая\nфункции распределения.", name),
-       xlab = "Значения", ylab = "F(x)", col = "blue", lwd = 2)
-  lines(x_vals, theoretical_cdf, col = "red", lwd = 2)
-  legend("bottomright", legend = c("Эмпирическая", "Теоретическая"), col = c("blue", "red"), lwd = 2)
-  dev.copy(png, paste0("cdf_", name, ".png"))
-  dev.off()
-  
-  return(list(mean = sample_mean, var = sigma2_hat, linewidth = length(sample)))
+  # Построение эмпирической и теоретической функций распределения
+  plot(ecdf(sample), 
+       main = paste("Эмпирическая и теоретическая функции\nраспределения ", name),
+       xlab = "Значения", ylab = "Функция распределения", col = "blue", lwd = 2)
+  curve(pnorm(x, mean = a_hat, sd = sigma_hat), 
+        col = "red", lwd = 2, add = TRUE)
+  legend("bottomright", legend = c("Эмпирическая функция", "Теоретическая функция"), 
+         col = c("blue", "red"), lty = 1, lwd = 2)
 }
 
 # Анализ выборок
