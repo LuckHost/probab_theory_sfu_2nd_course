@@ -121,7 +121,7 @@ cat("\nДов. интервал для матожидания (q=0.95): ", ci_sa
 cat("Дов. интервал для дисперсии (q=0.95): ", ci_sample2$variance_ci, "\n")
 
 ci_sample3 <- confidence_intervals(sample3, 0.95)
-cat("\nДов. интервал для матожидания (q=0.95): ", ci_samp3e1$mean_ci, "\n")
+cat("\nДов. интервал для матожидания (q=0.95): ", ci_sample3$mean_ci, "\n")
 cat("Дов. интервал для дисперсии (q=0.95): ", ci_sample3$variance_ci, "\n")
 
 
